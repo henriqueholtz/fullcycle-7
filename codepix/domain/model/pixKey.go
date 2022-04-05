@@ -9,6 +9,14 @@ type PixKey struct {
 	Status    string   `json:"status" valid:"notnull"`
 }
 
+type PixKeyRepositoryInterface interface {
+	RegisterKey(pixKey *PixKey) (*PixKey, error)
+	FindKeyByKind(key string, kind string) (*PixKey, error)
+	AddBank(bank *Bank) error
+	AddAccount(account *Account) error
+	FindAccount(id string) (*Account, error)
+}
+
 func (pixKey *PixKey) isValid() error {
 	_, err := govalidator.ValidateStruct(pixKey)
 
@@ -33,10 +41,10 @@ func NewPixKey(kind string, account *Account, key string) (*PixKey, error) {
 		Status:  "active",
 	}
 
-	account.ID = uuid.NewV4().String()
-	account.CreatedAt = time.Now()
+	pixKey.ID = uuid.NewV4().String()
+	pixKey.CreatedAt = time.Now()
 
-	err := account.isValid()
+	err := pixKey.isValid()
 	if err != nil {
 		return nil, err
 	}
