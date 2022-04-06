@@ -19,7 +19,7 @@ func (p *PixUseCase) RegisterKey(key string, kind string, accountId string) (*mo
 
 	p.PixKeyRepository.RegisterKey(pixKey)
 	if pixKey.ID == "" {
-		return nil, errors.New("Unable to create new key at the moment!")
+		return nil, err //("Unable to create new key at the moment!")
 	}
 
 	return pixKey, nil
