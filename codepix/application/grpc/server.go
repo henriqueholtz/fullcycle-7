@@ -34,8 +34,8 @@ func StartGrpcServer(database *gorm.DB, port int) {
 	}
 }
 
-func NewPixGrpcService(usecase usecase.PixUseCase) *PixGrpcService {
+func NewPixGrpcService(pixUseCase usecase.PixUseCase) *PixGrpcService {
 	return &PixGrpcService{
-		PixUseCase: usecase.PixUseCase{},
+		PixUseCase: pixUseCase,
 	}
 }
