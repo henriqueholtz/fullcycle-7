@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/codeedu/imersao/codepix-go/domain/model"
+	"github.com/henriqueholtz/fullcycle-7/domain/model"
 	"log"
 	"os"
 	"path/filepath"
