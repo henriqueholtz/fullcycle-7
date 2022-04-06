@@ -1,9 +1,15 @@
 package model
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"time"
+
+	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
 )
+
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
 
 type Bank struct {
 	Base     `valid:"required"`

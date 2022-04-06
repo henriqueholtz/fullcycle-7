@@ -1,5 +1,12 @@
 package model
 
+import (
+	"errors"
+	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
+	"time"
+)
+
 type Transactions struct {
 	Transactions []Transaction
 }
@@ -49,9 +56,9 @@ const (
 	TransactionConfirmed string = "confirmed"
 )
 
-func NewTransaction(accountFriom *Account, amount float64, pixKeyTo *PixKey, description string) (*Transaction, error) {
+func NewTransaction(accountFrom *Account, amount float64, pixKeyTo *PixKey, description string) (*Transaction, error) {
 	transaction := Transaction{
-		AccountFrom: accountFriom,
+		AccountFrom: accountFrom,
 		Amount:      amount,
 		PixKeyTo:    pixKeyTo,
 		Status:      TransactionPending,

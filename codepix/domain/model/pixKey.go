@@ -1,5 +1,12 @@
 package model
 
+import (
+	"errors"
+	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
+	"time"
+)
+
 type PixKey struct {
 	Base      `valid:"required"`
 	Kind      string   `json:"kind" valid:"notnull"`
@@ -7,6 +14,10 @@ type PixKey struct {
 	AccountID string   `gorm:"column:account_id;type:uuid;not null" valid:"-"`
 	Account   *Account `valid:"-"`
 	Status    string   `json:"status" valid:"notnull"`
+}
+
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
 }
 
 type PixKeyRepositoryInterface interface {
