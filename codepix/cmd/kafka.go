@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/henriqueholtz/fullcycle-7/application/kafka"
 
 	"github.com/spf13/cobra"
@@ -17,8 +18,10 @@ var kafkaCmd = &cobra.Command{
 	Short: "Start consuming transactions using Apache Kafka",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Produce a kafka message")
+		deliveryChan := make(chan ckafka.Event)
 		producer := kafka.NewKafkaProducer()
-		kafka.Publish("Hello Kafka!", "test", producer)
+		kafka.Publish("Hello Kafka!", "test", producer, deliveryChan)
+		kafka.DeliveryReport(deliveryChan)
 	},
 }
 
