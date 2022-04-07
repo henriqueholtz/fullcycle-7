@@ -27,13 +27,14 @@ services:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - kafka
-    command: >
+    command:
       bash -c
         "sleep 5s &&
         kafka-topics --create --topic=transactions --if-not-exists --bootstrap-server=kafka:9092 &&
         kafka-topics --create --topic=transaction_confirmation --if-not-exists --bootstrap-server=kafka:9092 &&
         kafka-topics --create --topic=bank001 --if-not-exists --bootstrap-server=kafka:9092 &&
         kafka-topics --create --topic=bank002 --if-not-exists --bootstrap-server=kafka:9092"
+
   control-center:
     image: confluentinc/cp-enterprise-control-center:6.0.1
     hostname: control-center
