@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/henriqueholtz/fullcycle-7/application/grpc/pb"
 	"github.com/henriqueholtz/fullcycle-7/application/usecase"
-	"github.com/henriqueholtz/fullcycle-7/infraestructure/repository"
+	"github.com/henriqueholtz/fullcycle-7/infrastructure/repository"
 	"github.com/jinzhu/gorm"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
