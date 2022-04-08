@@ -8,6 +8,8 @@ import (
 	"fmt"
 	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/henriqueholtz/fullcycle-7/application/kafka"
+	"github.com/henriqueholtz/fullcycle-7/infrastructure/db"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +23,11 @@ var kafkaCmd = &cobra.Command{
 		deliveryChan := make(chan ckafka.Event)
 		producer := kafka.NewKafkaProducer()
 		kafka.Publish("Hello Kafka!", "test", producer, deliveryChan)
-		kafka.DeliveryReport(deliveryChan)
+		go kafka.DeliveryReport(deliveryChan) //new Thread
+
+		database := db.ConnectDB(os.Getenv("env"))
+		kafkaProcessor := kafka.NewKafkaProcessor(database, producer, deliveryChan)
+		kafkaProcessor.Consume()
 	},
 }
 
