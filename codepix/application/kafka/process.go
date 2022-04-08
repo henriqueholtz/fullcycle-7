@@ -8,6 +8,7 @@ import (
 	"github.com/henriqueholtz/fullcycle-7/application/usecase"
 	"github.com/henriqueholtz/fullcycle-7/domain/model"
 	"github.com/jinzhu/gorm"
+	"os"
 )
 
 type KafkaProcessor struct {
@@ -27,8 +28,8 @@ func NewKafkaProcessor(database *gorm.DB, producer *ckafka.Producer, deliveryCha
 func (k *KafkaProcessor) Consume() {
 	port := 9092
 	configMap := &ckafka.ConfigMap{
-		"bootstrap.servers": fmt.Sprintf("kafka:%d", port),
-		"group.id":          "consumergroup",
+		"bootstrap.servers": os.Getenv("kafkaBootstrapServers"),
+		"group.id":          os.Getenv("kafkaConsumerGroupId"),
 		"auto.offset.reset": "earLiest",
 	}
 	c, err := ckafka.NewConsumer(configMap)
@@ -36,7 +37,7 @@ func (k *KafkaProcessor) Consume() {
 		panic(err)
 	}
 
-	topics := []string{"test"}
+	topics := []string{os.Getenv("kafkaTransactionTopic"), os.Getenv("kafkaTransactionConfirmationTopic")}
 	c.SubscribeTopics(topics, nil)
 
 	fmt.Println(fmt.Sprintf("Kafka consumer has been started at %d port", port))
@@ -116,7 +117,13 @@ func (k *KafkaProcessor) processTransactionConfirmation(msg *ckafka.Message) err
 		if err != nil {
 			return err
 		}
+	} else if transaction.Status == model.TransactionCompleted {
+		_, err := transactionUseCase.Complete(transaction.ID)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (k *KafkaProcessor) confirmTransaction(transaction *appmodel.Transaction, transactionUseCase usecase.TransactionUseCase) error {
