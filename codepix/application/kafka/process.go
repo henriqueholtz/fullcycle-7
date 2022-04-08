@@ -60,7 +60,7 @@ func (k *KafkaProcessor) processMessage(msg *ckafka.Message) {
 	case transactionsTopic:
 		k.processTransaction(msg)
 	case transactionConfirmationTopic:
-		k.confirmTransaction(msg)
+		k.processTransactionConfirmation(msg)
 	default:
 		fmt.Println("Invalid topic, or this is not implemented!")
 	}
