@@ -3,6 +3,10 @@ package kafka
 import (
 	"fmt"
 	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/henriqueholtz/fullcycle-7/application/factory"
+	appmodel "github.com/henriqueholtz/fullcycle-7/application/model"
+	"github.com/henriqueholtz/fullcycle-7/application/usecase"
+	"github.com/henriqueholtz/fullcycle-7/domain/model"
 	"github.com/jinzhu/gorm"
 )
 
@@ -39,9 +43,97 @@ func (k *KafkaProcessor) Consume() {
 	for {
 		msg, err := c.ReadMessage(-1)
 		if err == nil {
-			fmt.Println(fmt.Sprintf("Message consumed with success: %d", string(msg.Value)))
+			fmt.Println(fmt.Sprintf("Message consumed with success: ", string(msg.Value), " ! Processing..."))
+			k.processMessage(msg)
 		} else {
-			fmt.Println(fmt.Sprintf("Message consumed with error: %d . Error: %d", string(msg.Value), err))
+			fmt.Println(fmt.Sprintf("Message consumed with error: ", string(msg.Value), " . Error: ", err))
 		}
 	}
+}
+
+func (k *KafkaProcessor) processMessage(msg *ckafka.Message) {
+	transactionsTopic := "transactions"
+	transactionConfirmationTopic := "transaction_confirmatio"
+
+	switch topic := *msg.TopicPartition.Topic; topic {
+	case transactionsTopic:
+		k.processTransaction(msg)
+	case transactionConfirmationTopic:
+		k.confirmTransaction(msg)
+	default:
+		fmt.Println("Invalid topic, or this is not implemented!")
+	}
+}
+
+func (k *KafkaProcessor) processTransaction(msg *ckafka.Message) error {
+	transaction := appmodel.NewTransaction()
+	err := transaction.ParseJson(msg.Value)
+	if err != nil {
+		return err
+	}
+
+	transactionUseCase := factory.TransactionUseCaseFactory(k.Database)
+	createdTransaction, err := transactionUseCase.Register(
+		transaction.AccountID,
+		transaction.Amount,
+		transaction.PixKeyTo,
+		transaction.PixKeyKindTo,
+		transaction.Description,
+		transaction.ID,
+	)
+	if err != nil {
+		fmt.Println("Error at register new transaction", err)
+		return err
+	}
+
+	topic := "bank" + createdTransaction.PixKeyTo.Account.Bank.Code
+	transaction.ID = createdTransaction.ID
+	transaction.Status = model.TransactionPending
+	transactionJson, err := transaction.ToJson()
+	if err != nil {
+		return err
+	}
+
+	err = Publish(string(transactionJson), topic, k.Producer, k.DeliveryChan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k *KafkaProcessor) processTransactionConfirmation(msg *ckafka.Message) error {
+	transaction := appmodel.NewTransaction()
+	err := transaction.ParseJson(msg.Value)
+	if err != nil {
+		return err
+	}
+
+	transactionUseCase := factory.TransactionUseCaseFactory(k.Database)
+
+	if transaction.Status == model.TransactionConfirmed {
+		err = k.confirmTransaction(transaction, transactionUseCase)
+		if err != nil {
+			return err
+		}
+	}
+}
+
+func (k *KafkaProcessor) confirmTransaction(transaction *appmodel.Transaction, transactionUseCase usecase.TransactionUseCase) error {
+	confirmedTransaction, err := transactionUseCase.Confirm(transaction.ID)
+	if err != nil {
+		return err
+	}
+
+	topic := "bank" + confirmedTransaction.AccountFrom.Bank.Code
+	transactionConfirmedJson, err := transaction.ToJson()
+	if err != nil {
+		return err
+	}
+
+	err = Publish(string(transactionConfirmedJson), topic, k.Producer, k.DeliveryChan)
+	if err != nil {
+		return err
+	}
+	return nil
 }
