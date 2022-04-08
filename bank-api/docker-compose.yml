@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nestapp:
+    build: .
+    entrypoint: .docker/entrypoint.sh
+    container_name: fullcycle7-bank-next
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+
+  db:
+    build: .docker/postgress
+    container_name: fullcycle7-bank-db
+    restart: always
+    tty: true
+    volumes:
+      - .docker/dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=fullcycle-nest-db
