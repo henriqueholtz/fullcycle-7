@@ -1,13 +1,15 @@
 version: '3'
 services:
-  nestapp:
+  app:
     build: .
     entrypoint: .docker/entrypoint.sh
     container_name: fullcycle7-bank-next
     ports:
-      - 3000:3000
+      - '3000:3000'
     volumes:
       - .:/home/node/app
+    depends_on:
+      - db
 
   db:
     build: .docker/postgress
