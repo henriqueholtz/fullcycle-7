@@ -12,6 +12,8 @@ services:
       - db
     env_file:
       - .env
+    extra_hosts:
+      - 'host.docker.internal:172.17.0.1'
 
   db:
     build: .docker/postgress
