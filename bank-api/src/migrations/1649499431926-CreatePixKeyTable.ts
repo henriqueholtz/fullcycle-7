@@ -54,5 +54,5 @@ export class CreatePixKeyTable1649499431926 implements MigrationInterface {
       'pix_keys_bank_account_id_foreign_key',
     );
     await queryRunner.dropTable('pix_keys');
-  }}
+  }
 }
