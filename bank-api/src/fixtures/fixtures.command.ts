@@ -12,7 +12,7 @@ export class FixturesCommand {
   async command() {
     await this.runMigrations();
     for (const fixture of fixtures) {
-      await this.createInDatabase(fixture.model, fixture);
+      await this.createInDatabase(fixture.model, fixture.fields);
     }
     console.log(chalk.green, 'Fake data generated');
   }

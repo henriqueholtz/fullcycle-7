@@ -5,7 +5,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { V4 as uuidV4 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 
 @Entity({
   name: 'bank_accounts',

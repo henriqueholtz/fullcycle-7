@@ -15,11 +15,11 @@ export class CreateBankAccountsTable1649489091075
           },
           {
             name: 'account_number',
-            type: 'varchar(255)', //Default is 255
+            type: 'varchar', //Default is 255
           },
           {
             name: 'owner_name',
-            type: 'varchar(255)', //Default is 255
+            type: 'varchar', //Default is 255
           },
           {
             name: 'balance',
