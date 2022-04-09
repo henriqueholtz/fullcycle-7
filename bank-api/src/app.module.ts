@@ -9,6 +9,10 @@ import { BankAccountController } from './controllers/bank-account/bank-account.c
 import { ConsoleModule } from 'nestjs-console';
 import { FixturesCommand } from './fixtures/fixtures.command';
 import { PixKeyController } from './controllers/pix-key/pix-key.controller';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
+import { Transaction } from './models/transaction.model';
+import { TransactionController } from './controllers/transaction/transaction.controller';
 
 @Module({
   imports: [
@@ -21,11 +25,27 @@ import { PixKeyController } from './controllers/pix-key/pix-key.controller';
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
-      entities: [BankAccount, PixKey],
+      entities: [BankAccount, PixKey, Transaction],
     }),
-    TypeOrmModule.forFeature([BankAccount, PixKey]),
+    TypeOrmModule.forFeature([BankAccount, PixKey, Transaction]),
+    ClientsModule.register([
+      {
+        name: 'CODEPIX_PACKAGE',
+        // transport: Transport.GRPC,
+        options: {
+          url: process.env.GRPC_URL,
+          package: 'github.com.henriqueholtz.fullcycle7.codepix', //from fileName.proto,
+          protopath: [join(__dirname, 'protofiles/pixkey.proto')],
+        },
+      },
+    ]),
   ],
-  controllers: [AppController, BankAccountController, PixKeyController],
+  controllers: [
+    AppController,
+    BankAccountController,
+    PixKeyController,
+    TransactionController,
+  ],
   providers: [AppService, FixturesCommand],
 })
 export class AppModule {}
