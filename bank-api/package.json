@@ -23,6 +23,7 @@
     "console": "ts-node -r tsconfig-paths/register src/console.ts"
   },
   "dependencies": {
+    "@grpc/proto-loader": "^0.6.9",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
