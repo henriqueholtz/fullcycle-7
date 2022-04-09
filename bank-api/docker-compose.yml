@@ -10,6 +10,8 @@ services:
       - .:/home/node/app
     depends_on:
       - db
+    env_file:
+      - .env
 
   db:
     build: .docker/postgress
