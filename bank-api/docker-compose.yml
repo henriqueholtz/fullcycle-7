@@ -3,7 +3,7 @@ services:
   app:
     build: .
     entrypoint: .docker/entrypoint.sh
-    container_name: fullcycle7-bank-next
+    container_name: fullcycle7-bank-nest-api
     ports:
       - '3000:3000'
     volumes:
@@ -15,7 +15,7 @@ services:
 
   db:
     build: .docker/postgress
-    container_name: fullcycle7-bank-db
+    container_name: fullcycle7-bank-postgres-db
     restart: always
     tty: true
     volumes:
