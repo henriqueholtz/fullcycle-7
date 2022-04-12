@@ -31,11 +31,11 @@ import { TransactionController } from './controllers/transaction/transaction.con
     ClientsModule.register([
       {
         name: 'CODEPIX_PACKAGE',
-        // transport: Transport.GRPC,
+        transport: Transport.GRPC,
         options: {
           url: process.env.GRPC_URL,
           package: 'github.com.henriqueholtz.fullcycle7.codepix', //from fileName.proto,
-          protopath: [join(__dirname, 'protofiles/pixkey.proto')],
+          protoPath: [join(__dirname, 'protofiles/pixkey.proto')],
         },
       },
     ]),
