@@ -1,0 +1,13 @@
+GET http://localhost:3000
+
+
+###
+GET http://localhost:3000/api/bank-accounts
+
+###
+GET http://localhost:3000/api/bank-accounts
+GET http://localhost:3000/api/bank-accounts/6e4635ce-88d1-4e58-9597-d13fc446ee47
+
+GET http://localhost:3000/api/bank-accounts/6e4635ce-88d1-4e58-9597-d13fc446ee47/pix-keys
+
+GET http://localhost:3000/api/bank-accounts/6e4635ce-88d1-4e58-9597-d13fc446ee47/transactions
